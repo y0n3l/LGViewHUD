@@ -11,12 +11,13 @@ Code example:
     #in a UIViewController ....
     LGViewHUD* hud = [LGViewHUD defaultHUD];
     hud.image=[UIImage imageNamed:@"rounded-checkmark.png"];
-    hud.topText=@"Done !";
-    hud.bottomText=@"Great !";  
+    hud.topText=@"LGViewHUD";
+    hud.bottomText=@"you did it !";  
 	
     # show it in current view (it will disappear 2 sec later)
     [hud showInView:self.view]
     
     #with an activity indicator
     hud.activityIndicatorOn=YES;
-    
+   
+[![](http://dl.dropbox.com/u/2236298/LGViewHUD_00.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_00.png)
