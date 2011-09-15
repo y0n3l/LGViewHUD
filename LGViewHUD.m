@@ -27,7 +27,7 @@ static LGViewHUD* defaultHUD = nil;
     if (self) {
         // Initialization code.
 		double offset = frame.size.height/4.0;
-		topLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, offset/3.0, frame.size.width, offset/3.0)];
+		topLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, offset/3.0, frame.size.width, offset/2)];
 		topLabel.backgroundColor=[UIColor clearColor];
 		topLabel.textColor=[UIColor whiteColor];
 		topLabel.font=[UIFont boldSystemFontOfSize:17];
@@ -35,7 +35,7 @@ static LGViewHUD* defaultHUD = nil;
 		topLabel.shadowOffset=CGSizeMake(1, 1);
 		topLabel.textAlignment=UITextAlignmentCenter;
 		
-		bottomLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, frame.size.height-2*offset/3.0, frame.size.width, offset/3.0)];
+		bottomLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, frame.size.height-2*offset/3.0, frame.size.width, offset/2)];
 		bottomLabel.backgroundColor=[UIColor clearColor];
 		bottomLabel.textColor=[UIColor whiteColor];
 		bottomLabel.font=[UIFont boldSystemFontOfSize:17];
@@ -155,12 +155,11 @@ static LGViewHUD* defaultHUD = nil;
 	switch (animation) {
 		case HUDAnimationNone:
 			self.alpha=1.0;
-			self.center=CGPointMake(view.center.x, view.center.y+18);
+			self.center=CGPointMake(view.frame.size.width/2.0, view.frame.size.height/2.0);
 			[view addSubview:self];
 			break;
 		case HUDAnimationShowZoom:
-			self.center=CGPointMake(view.center.x, view.center.y+18);
-			//self.center=CGPointMake(view.frame.size.width/2, view.frame.size.height/2);
+			self.center=CGPointMake(view.frame.size.width/2.0, view.frame.size.height/2.0);
 			self.alpha=0;
 			self.transform=CGAffineTransformMakeScale(1.7, 1.7);
 			[view addSubview:self];
