@@ -22,3 +22,4 @@ Code example:
    
 [![](http://dl.dropbox.com/u/2236298/LGViewHUD_00.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_00.png)
 [![](http://dl.dropbox.com/u/2236298/LGViewHUD_01.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_01.png)
+[![](http://dl.dropbox.com/u/2236298/LGViewHUD_02.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_02.png)
