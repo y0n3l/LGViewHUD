@@ -43,7 +43,6 @@ static LGViewHUD* defaultHUD = nil;
 		bottomLabel.shadowOffset=CGSizeMake(1, 1);
 		
 		bottomLabel.textAlignment=UITextAlignmentCenter;
-		bottomLabel.text=@"test";
 		image=nil;
 		
 		backgroundView= [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
@@ -128,7 +127,8 @@ static LGViewHUD* defaultHUD = nil;
 		if (activityIndicatorOn) {
 			activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 			[activityIndicator startAnimating];
-			activityIndicator.center=CGPointMake(self.frame.size.width/2.0, self.frame.size.height/2.0);
+			//NSLog(@"HUD frame %@ bounds %@", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.bounds));
+			activityIndicator.center=CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0);
 			//CGRect frame = CGRectMake(self.frame.size.width/3.0, self.frame.size.height/3.0, self.frame.size.width/3.0, self.frame.size.height/3.0);
 			//activityIndicator.frame=frame;
 			imageView.hidden=YES;
@@ -155,6 +155,7 @@ static LGViewHUD* defaultHUD = nil;
 	switch (animation) {
 		case HUDAnimationNone:
 			self.alpha=1.0;
+			self.transform=CGAffineTransformMakeScale(1, 1);
 			self.center=CGPointMake(view.frame.size.width/2.0, view.frame.size.height/2.0);
 			[view addSubview:self];
 			break;
@@ -226,10 +227,9 @@ static LGViewHUD* defaultHUD = nil;
 }
 
 -(void) animationDidStop:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
-	if (self.alpha==0.0)
+	if (self.alpha==0.0) {
 		[self removeFromSuperview];
+	}
 }
-
-
 
 @end
