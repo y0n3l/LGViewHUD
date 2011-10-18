@@ -25,6 +25,9 @@ static LGViewHUD* defaultHUD = nil;
     
     self = [super initWithFrame:frame];
     if (self) {
+		
+		self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | 
+								UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         // Initialization code.
 		double offset = frame.size.height/4.0;
 		topLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, offset/3.0, frame.size.width, offset/2)];
