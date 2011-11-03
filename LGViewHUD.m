@@ -130,10 +130,7 @@ static LGViewHUD* defaultHUD = nil;
 		if (activityIndicatorOn) {
 			activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 			[activityIndicator startAnimating];
-			//NSLog(@"HUD frame %@ bounds %@", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.bounds));
 			activityIndicator.center=CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0);
-			//CGRect frame = CGRectMake(self.frame.size.width/3.0, self.frame.size.height/3.0, self.frame.size.width/3.0, self.frame.size.height/3.0);
-			//activityIndicator.frame=frame;
 			imageView.hidden=YES;
 			[self addSubview:activityIndicator];
 		} else {
@@ -155,15 +152,16 @@ static LGViewHUD* defaultHUD = nil;
 }
 
 -(void) showInView:(UIView *)view withAnimation:(HUDAnimation)animation {
+	//NSLog(@"HUD showing in view %@ | %@", view, NSStringFromCGRect(view.bounds));
 	switch (animation) {
 		case HUDAnimationNone:
 			self.alpha=1.0;
 			self.transform=CGAffineTransformMakeScale(1, 1);
-			self.center=CGPointMake(view.frame.size.width/2.0, view.frame.size.height/2.0);
+			self.center=CGPointMake(view.bounds.size.width/2.0, view.bounds.size.height/2.0);
 			[view addSubview:self];
 			break;
 		case HUDAnimationShowZoom:
-			self.center=CGPointMake(view.frame.size.width/2.0, view.frame.size.height/2.0);
+			self.center=CGPointMake(view.bounds.size.width/2.0, view.bounds.size.height/2.0);
 			self.alpha=0;
 			self.transform=CGAffineTransformMakeScale(1.7, 1.7);
 			[view addSubview:self];
@@ -187,15 +185,23 @@ static LGViewHUD* defaultHUD = nil;
 				break;
 		}
 		[self hideAfterDelay:displayDuration withAnimation:disappearAnimation ];
+	} else {
+		//invalidate current timer for hide if any.
+		[displayTimer invalidate];
+		[displayTimer release];
+		displayTimer=nil;
 	}
 }
 
 -(void) hideAfterDelay:(NSTimeInterval)delayDuration withAnimation:(HUDAnimation) animation{
 	[displayTimer invalidate];
 	[displayTimer release];
-	displayTimer = [[NSTimer scheduledTimerWithTimeInterval:delayDuration target:self 
-												   selector:@selector(displayTimeOut:) 
-												   userInfo:[NSNumber numberWithInt:animation] repeats:NO] retain];	
+	displayTimer = [[NSTimer timerWithTimeInterval:delayDuration target:self selector:@selector(displayTimeOut:) 
+										  userInfo:[NSNumber numberWithInt:animation] repeats:NO] retain];
+	[[NSRunLoop mainRunLoop] addTimer:displayTimer forMode:NSRunLoopCommonModes];
+	//displayTimer = [[NSTimer scheduledTimerWithTimeInterval:delayDuration target:self 
+//												   selector:@selector(displayTimeOut:) 
+//												   userInfo:[NSNumber numberWithInt:animation] repeats:NO] retain];	
 }
 
 -(void) displayTimeOut:(NSTimer*)timer {
