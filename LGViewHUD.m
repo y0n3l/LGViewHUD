@@ -54,12 +54,12 @@ static LGViewHUD* defaultHUD = nil;
 		backgroundView.alpha=kHUDDefaultAlphaValue;
 		
 		offset=frame.size.width/3.0;
-		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(frame.size.width/3.0, frame.size.height/3.0, 
-																  frame.size.width/3.0, frame.size.height/3.0)];
-		imageView.contentMode=UIViewContentModeScaleAspectFit;// UIViewContentModeCenter;
+		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(frame.size.width/4.0, frame.size.height/4.0, 
+																  frame.size.width/2.0, frame.size.height/2.0)];
+		imageView.contentMode=UIViewContentModeCenter;
 		if ([imageView.layer respondsToSelector:@selector(setShadowColor:)]) {
 		imageView.layer.shadowColor=[[UIColor blackColor] CGColor];
-			imageView.layer.shadowOffset = CGSizeMake(1, 1);
+			imageView.layer.shadowOffset = CGSizeMake(0, 1);
 			imageView.layer.shadowOpacity=1.0;
 			imageView.layer.shadowRadius=0.0;
 		}
