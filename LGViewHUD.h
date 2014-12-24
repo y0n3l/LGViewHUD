@@ -48,6 +48,10 @@ typedef enum {
 /** Returns the default HUD singleton instance. */
 +(LGViewHUD*) defaultHUD;
 
+-(void) show;
+
+-(void) showWithAnimation:(HUDAnimation)animation;
+
 /** Shows the HUD and hides it after a delay equals to the displayDuration property value. 
  HUDAnimationNone is used by default. */
 -(void) showInView:(UIView*)view;

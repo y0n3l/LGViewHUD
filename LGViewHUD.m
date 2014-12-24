@@ -34,18 +34,18 @@ static LGViewHUD* defaultHUD = nil;
 		topLabel.backgroundColor=[UIColor clearColor];
 		topLabel.textColor=[UIColor whiteColor];
 		topLabel.font=[UIFont boldSystemFontOfSize:17];
-		topLabel.shadowColor=[UIColor blackColor];
-		topLabel.shadowOffset=CGSizeMake(1, 1);
-		topLabel.textAlignment=UITextAlignmentCenter;
+		//topLabel.shadowColor=[UIColor blackColor];
+		//topLabel.shadowOffset=CGSizeMake(1, 1);
+		topLabel.textAlignment=NSTextAlignmentCenter;
 		
 		bottomLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, frame.size.height-2*offset/3.0, frame.size.width, offset/2)];
 		bottomLabel.backgroundColor=[UIColor clearColor];
 		bottomLabel.textColor=[UIColor whiteColor];
 		bottomLabel.font=[UIFont boldSystemFontOfSize:17];
-		bottomLabel.shadowColor=[UIColor blackColor];
-		bottomLabel.shadowOffset=CGSizeMake(1, 1);
+		//bottomLabel.shadowColor=[UIColor blackColor];
+		//bottomLabel.shadowOffset=CGSizeMake(1, 1);
 		
-		bottomLabel.textAlignment=UITextAlignmentCenter;
+		bottomLabel.textAlignment=NSTextAlignmentCenter;
 		image=nil;
 		
 		backgroundView= [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
@@ -56,12 +56,13 @@ static LGViewHUD* defaultHUD = nil;
 		offset=frame.size.width/3.0;
 		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(frame.size.width/4.0, frame.size.height/4.0, 
 																  frame.size.width/2.0, frame.size.height/2.0)];
-		imageView.contentMode=UIViewContentModeCenter;
+		imageView.contentMode = UIViewContentModeCenter;
+        imageView.tintColor = [UIColor whiteColor];
 		if ([imageView.layer respondsToSelector:@selector(setShadowColor:)]) {
-		imageView.layer.shadowColor=[[UIColor blackColor] CGColor];
-			imageView.layer.shadowOffset = CGSizeMake(0, 1);
-			imageView.layer.shadowOpacity=1.0;
-			imageView.layer.shadowRadius=0.0;
+            //imageView.layer.shadowColor=[[UIColor blackColor] CGColor];
+			//imageView.layer.shadowOffset = CGSizeMake(0, 1);
+			//imageView.layer.shadowOpacity=1.0;
+			//imageView.layer.shadowRadius=0.0;
 		}
 		activityIndicator=nil;
 		[self addSubview:backgroundView];
@@ -111,7 +112,7 @@ static LGViewHUD* defaultHUD = nil;
 
 /** this disables the activity indicator on if any. */
 -(void) setImage:(UIImage*) img {
-	imageView.image=img;
+	imageView.image = img;
 	if (activityIndicatorOn)
 		self.activityIndicatorOn=NO;
 }
@@ -145,6 +146,14 @@ static LGViewHUD* defaultHUD = nil;
 
 -(void) layoutSubviews {
 	[super layoutSubviews];
+}
+
+-(void) show {
+    [self showWithAnimation:HUDAnimationNone];
+}
+
+-(void) showWithAnimation:(HUDAnimation)animation {
+    [self showInView:[UIApplication sharedApplication].windows.firstObject withAnimation:animation];
 }
 
 -(void) showInView:(UIView*)view {
