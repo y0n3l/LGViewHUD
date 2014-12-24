@@ -5,12 +5,12 @@
 
 #import <UIKit/UIKit.h>
 
-typedef enum {
+NS_ENUM (NSInteger, HUDAnimation) {
 	HUDAnimationNone,
 	HUDAnimationShowZoom,
 	HUDAnimationHideZoom,
 	HUDAnimationHideFadeOut
-} HUDAnimation;
+};
 
 /**
  A HUD that mimics the native one used in iOS (when you press volume up or down 
