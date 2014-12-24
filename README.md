@@ -20,6 +20,6 @@ Code example:
     #with an activity indicator
     hud.activityIndicatorOn=YES;
    
-[![](http://dl.dropbox.com/u/2236298/LGViewHUD_00.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_00.png)
-[![](http://dl.dropbox.com/u/2236298/LGViewHUD_01.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_01.png)
-[![](http://dl.dropbox.com/u/2236298/LGViewHUD_02.png)](http://dl.dropbox.com/u/2236298/LGViewHUD_02.png)
+[![](./preview/LGViewHUD_00.png)](./preview/LGViewHUD_00.png)
+[![](./preview/LGViewHUD_01.png)](./preview/LGViewHUD_01.png)
+[![](./preview/LGViewHUD_02.png)](./preview/LGViewHUD_02.png)
