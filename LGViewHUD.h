@@ -5,7 +5,7 @@
 
 #import <UIKit/UIKit.h>
 
-NS_ENUM (NSInteger, HUDAnimation) {
+typedef NS_ENUM (NSInteger, HUDAnimation) {
 	HUDAnimationNone,
 	HUDAnimationShowZoom,
 	HUDAnimationHideZoom,
