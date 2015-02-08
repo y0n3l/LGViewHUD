@@ -17,33 +17,22 @@ typedef NS_ENUM (NSInteger, HUDAnimation) {
  on the iPhone for instance) and also provides some more features (some more animations
  + activity indicator support included.)
  */
+IB_DESIGNABLE
 
 @interface LGViewHUD : UIView {
-	UIImage* image;
-	UIImageView* imageView;
-	UILabel* bottomLabel;
-	UILabel* topLabel;
-	UIView* backgroundView;
-	NSTimeInterval displayDuration;
-	NSTimer* displayTimer;
-	BOOL activityIndicatorOn;
-	UIActivityIndicatorView* activityIndicator;
 }
+
 /** The image displayed at the center of the HUD. Default is nil. */
-@property (readwrite, retain) UIImage* image;
+@property (readwrite, retain) IBInspectable UIImage* image;
 /** The top text of the HUD. Shortcut to the text of the topLabel property. */
-@property (readwrite, retain) NSString* topText;
+@property (readwrite, retain) IBInspectable NSString* topText;
 /** The bottom text of the HUD. Shortcut to the text of the bottomLabel property. */
-@property (readwrite, retain) NSString* bottomText;
-/** The top label of the HUD. (So that you can adjust its properties ...) */
-@property (readonly) UILabel* topLabel;
-/** The bottom label of the HUD. (So that you can adjust its properties ...) */
-@property (readonly) UILabel* bottomLabel;
+@property (readwrite, retain) IBInspectable NSString* bottomText;
 /** HUD display duration. Default is 2 sec. */
 @property (readwrite) NSTimeInterval displayDuration;
 /** Diplays a large white activity indicator instead of the image if set to YES. 
- Default is NO. */ 
-@property (readwrite) BOOL activityIndicatorOn;
+ Default is `NO`. */
+@property (readwrite) IBInspectable BOOL activityIndicatorOn;
 
 /** Returns the default HUD singleton instance. */
 +(LGViewHUD*) defaultHUD;

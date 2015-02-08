@@ -4,88 +4,53 @@
 //
 
 #import "LGViewHUD.h"
+#import "NString+Height.h"
 #import <QuartzCore/QuartzCore.h>
 
 static LGViewHUD* defaultHUD = nil;
 
-@interface LGViewHUD (privateAPI)
--(void) startTimerForAutoHide;
--(void) hideAfterDelay:(NSTimeInterval)delayInSecs withAnimation:(HUDAnimation)animation;
+@interface LGViewHUD () {
+    UIFont* _labelsFont;
+    UIColor* _hudColor;
+    NSString* _topText;
+    NSString* _bottomText;
+    UIImage* image;
+    NSTimeInterval displayDuration;
+    NSTimer* displayTimer;
+    BOOL activityIndicatorOn;
+    UIActivityIndicatorView* activityIndicator;
+}
+
 @end
 
 @implementation LGViewHUD
 
 @synthesize displayDuration;
-@synthesize topLabel, bottomLabel;
 
 #define kHUDDefaultAlphaValue 0.65
 #define kHUDDefaultDisplayDuration 2
+#define kHUDCornerRadius 10
 
 - (id)initWithFrame:(CGRect)frame {
-    
     self = [super initWithFrame:frame];
     if (self) {
-		
-		self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | 
+        _labelsFont = [[UIFont boldSystemFontOfSize:17] retain];
+		self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
 								UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        // Initialization code.
-		double offset = frame.size.height/4.0;
-		topLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, offset/3.0, frame.size.width, offset/2)];
-		topLabel.backgroundColor=[UIColor clearColor];
-		topLabel.textColor=[UIColor whiteColor];
-		topLabel.font=[UIFont boldSystemFontOfSize:17];
-		//topLabel.shadowColor=[UIColor blackColor];
-		//topLabel.shadowOffset=CGSizeMake(1, 1);
-		topLabel.textAlignment=NSTextAlignmentCenter;
-		
-		bottomLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, frame.size.height-2*offset/3.0, frame.size.width, offset/2)];
-		bottomLabel.backgroundColor=[UIColor clearColor];
-		bottomLabel.textColor=[UIColor whiteColor];
-		bottomLabel.font=[UIFont boldSystemFontOfSize:17];
-		//bottomLabel.shadowColor=[UIColor blackColor];
-		//bottomLabel.shadowOffset=CGSizeMake(1, 1);
-		
-		bottomLabel.textAlignment=NSTextAlignmentCenter;
-		image=nil;
-		
-		backgroundView= [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-		backgroundView.layer.cornerRadius=10;
-		backgroundView.backgroundColor=[UIColor blackColor];
-		backgroundView.alpha=kHUDDefaultAlphaValue;
-		
-		offset=frame.size.width/3.0;
-		imageView = [[UIImageView alloc] initWithFrame:CGRectMake(frame.size.width/4.0, frame.size.height/4.0, 
-																  frame.size.width/2.0, frame.size.height/2.0)];
-		imageView.contentMode = UIViewContentModeCenter;
-        imageView.tintColor = [UIColor whiteColor];
-		if ([imageView.layer respondsToSelector:@selector(setShadowColor:)]) {
-            //imageView.layer.shadowColor=[[UIColor blackColor] CGColor];
-			//imageView.layer.shadowOffset = CGSizeMake(0, 1);
-			//imageView.layer.shadowOpacity=1.0;
-			//imageView.layer.shadowRadius=0.0;
-		}
-		activityIndicator=nil;
-		[self addSubview:backgroundView];
-		[self addSubview:imageView];
-		[self addSubview:topLabel];
-		[self addSubview:bottomLabel];
-		self.userInteractionEnabled=NO;
-		displayDuration=kHUDDefaultDisplayDuration;
-		
+        self.userInteractionEnabled = NO;
+		displayDuration = kHUDDefaultDisplayDuration;
+        _hudColor = [[UIColor colorWithWhite:0 alpha:kHUDDefaultAlphaValue] retain];
+        self.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
 
 - (void)dealloc {
-	[backgroundView release];
-	[topLabel release];
-	[bottomLabel release];
-	[imageView release];
-	backgroundView=nil;
-	topLabel=nil;
-	bottomLabel=nil;
-	imageView=nil;
-    [super dealloc];
+    [_labelsFont release];
+    _labelsFont = nil;
+    [_hudColor release];
+    _hudColor = nil;
+	[super dealloc];
 }
 
 +(LGViewHUD*) defaultHUD {
@@ -95,30 +60,38 @@ static LGViewHUD* defaultHUD = nil;
 }
 
 -(void) setTopText:(NSString *)t {
-	topLabel.text=t;
+    [t retain];
+    [_topText release];
+    _topText = t;
+	[self setNeedsDisplay];
 }
 
 -(NSString*) topText {
-	return topLabel.text;
+	return _topText;
 }
 
 -(void) setBottomText:(NSString *)t {
-	bottomLabel.text=t;
+    [t retain];
+    [_bottomText release];
+    _bottomText = t;
+    [self setNeedsDisplay];
 }
 
 -(NSString*) bottomText {
-	return bottomLabel.text;
+	return _bottomText;
 }
 
-/** this disables the activity indicator on if any. */
+/** This disables the activity indicator on if any. */
 -(void) setImage:(UIImage*) img {
-	imageView.image = img;
-	if (activityIndicatorOn)
-		self.activityIndicatorOn=NO;
+    [img retain];
+    [image release];
+    image = img;
+    self.activityIndicatorOn = NO;
+    [self setNeedsDisplay];
 }
 
 -(UIImage*) image {
-	return imageView.image;
+	return image;
 }
 
 -(BOOL) activityIndicatorOn {
@@ -132,20 +105,65 @@ static LGViewHUD* defaultHUD = nil;
 			activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 			[activityIndicator startAnimating];
 			activityIndicator.center=CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0);
-			imageView.hidden=YES;
+			//imageView.hidden=YES;
 			[self addSubview:activityIndicator];
 		} else {
 			//when applying an image, this will auto hide the HUD.
 			[activityIndicator removeFromSuperview];
-			imageView.hidden=NO;
+			//imageView.hidden=NO;
 			[activityIndicator release];
 			activityIndicator=nil;
 		}
+        [self setNeedsDisplay];
 	}
 }
 
+-(void) drawRect:(CGRect)rect {
+    UIBezierPath* bPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:kHUDCornerRadius];
+    [_hudColor setFill];
+    [bPath fill];
+    
+    CGFloat imgHeight = MIN(self.frame.size.width, self.frame.size.height) / 2.0;
+    
+    CGFloat labelSideMargins = 5;
+    CGFloat labelsWidth = self.frame.size.width - 2*labelSideMargins;
+    CGFloat topLabelHeight = [_topText heightForWidth:labelsWidth usingFont:_labelsFont];
+    
+    CGFloat labelsMaxHeight = (self.frame.size.height - imgHeight) / 2.0;
+    NSDictionary* attrs = nil;
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    attrs = @{NSFontAttributeName: _labelsFont,
+              NSForegroundColorAttributeName: [UIColor whiteColor],
+              NSParagraphStyleAttributeName: paragraphStyle};
+    [_topText drawInRect:CGRectMake(labelSideMargins, (labelsMaxHeight - topLabelHeight) /2.0 ,
+                                         labelsWidth, topLabelHeight)
+               withAttributes:attrs];
+    
+    CGFloat bottomLabelHeight = [_bottomText heightForWidth:labelsWidth usingFont:_labelsFont];
+    [_bottomText drawInRect:CGRectMake(labelSideMargins,
+                                       imgHeight + labelsMaxHeight + (labelsMaxHeight - bottomLabelHeight) /2.0 ,
+                                       labelsWidth,
+                                       bottomLabelHeight)
+               withAttributes:attrs];
+    
+    [paragraphStyle release];
+    
+    if (!activityIndicatorOn) {
+        CGRect imageFrame = CGRectMake((self.frame.size.width - image.size.width) /2.0,
+                                       (self.frame.size.height - image.size.height) / 2.0,
+                                       image.size.width,
+                                       image.size.height);
+        [image drawInRect:imageFrame];
+    }
+    [super drawRect:rect];
+}
+
 -(void) layoutSubviews {
-	[super layoutSubviews];
+    activityIndicator.center = CGPointMake(ceilf(self.frame.size.width / 2.0),
+                                           ceilf(self.frame.size.height / 2.0));
+    
+    [super layoutSubviews];
 }
 
 -(void) show {
