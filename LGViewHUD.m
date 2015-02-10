@@ -129,12 +129,12 @@ static LGViewHUD* defaultHUD = nil;
     [_hudColor setFill];
     [bPath fill];
     
-    CGFloat imgHeight = activityIndicator?activityIndicator.frame.size.height:image.size.height;
+    CGFloat imgCanvasHeight = rect.size.height / 2.0;
     
     CGFloat labelsWidth = self.frame.size.width - 2*labelSideMargins;
     CGFloat topLabelHeight = [_topText heightForWidth:labelsWidth usingFont:_labelsFont];
     
-    CGFloat labelsMaxHeight = (self.frame.size.height - imgHeight) / 2.0;
+    CGFloat labelsMaxHeight = (self.frame.size.height - imgCanvasHeight) / 2.0;
     NSDictionary* attrs = nil;
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.alignment = NSTextAlignmentCenter;
@@ -147,7 +147,7 @@ static LGViewHUD* defaultHUD = nil;
           withAttributes:attrs];
     
     CGFloat bottomLabelHeight = [_bottomText heightForWidth:labelsWidth usingFont:_labelsFont];
-    CGFloat bottomY = labelsMaxHeight + imgHeight + (labelsMaxHeight - bottomLabelHeight) /2.0;
+    CGFloat bottomY = labelsMaxHeight + imgCanvasHeight + (labelsMaxHeight - bottomLabelHeight) /2.0;
     bottomY = (bottomY + bottomLabelHeight > rect.size.height - labelSideMargins) ? rect.size.height - bottomLabelHeight - labelSideMargins:bottomY;
     [_bottomText drawInRect:CGRectMake(labelSideMargins,
                                        bottomY,
@@ -238,9 +238,6 @@ static LGViewHUD* defaultHUD = nil;
 	displayTimer = [[NSTimer timerWithTimeInterval:delayDuration target:self selector:@selector(displayTimeOut:) 
 										  userInfo:[NSNumber numberWithInt:animation] repeats:NO] retain];
 	[[NSRunLoop mainRunLoop] addTimer:displayTimer forMode:NSRunLoopCommonModes];
-	//displayTimer = [[NSTimer scheduledTimerWithTimeInterval:delayDuration target:self 
-//												   selector:@selector(displayTimeOut:) 
-//												   userInfo:[NSNumber numberWithInt:animation] repeats:NO] retain];	
 }
 
 -(void) displayTimeOut:(NSTimer*)timer {
