@@ -15,7 +15,7 @@ static LGViewHUD* defaultHUD = nil;
     NSString* _topText;
     NSString* _bottomText;
     UIImage* image;
-    NSTimeInterval displayDuration;
+    NSTimeInterval _displayDuration;
     NSTimer* displayTimer;
     BOOL activityIndicatorOn;
     UIActivityIndicatorView* activityIndicator;
@@ -25,10 +25,12 @@ static LGViewHUD* defaultHUD = nil;
 
 @implementation LGViewHUD
 
-@synthesize displayDuration;
+@synthesize displayDuration = _displayDuration;
+@synthesize animationDuration = _animationDuration;
 
 #define kHUDDefaultAlphaValue 0.65
 #define kHUDDefaultDisplayDuration 2
+#define kHUDDefaultAnimationDuration 0.3
 #define kHUDCornerRadius 10
 
 - (id)initWithFrame:(CGRect)frame {
@@ -38,9 +40,11 @@ static LGViewHUD* defaultHUD = nil;
 		self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
 								UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.userInteractionEnabled = NO;
-		displayDuration = kHUDDefaultDisplayDuration;
+		self.displayDuration = kHUDDefaultDisplayDuration;
+        self.animationDuration = kHUDDefaultAnimationDuration;
         _hudColor = [[UIColor colorWithWhite:0 alpha:kHUDDefaultAlphaValue] retain];
         self.backgroundColor = [UIColor clearColor];
+        self.tintColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -55,7 +59,7 @@ static LGViewHUD* defaultHUD = nil;
 
 +(LGViewHUD*) defaultHUD {
 	if (defaultHUD==nil)
-		defaultHUD=[[LGViewHUD alloc] initWithFrame:CGRectMake(0, 0, 160, 160)];
+		defaultHUD = [[LGViewHUD alloc] initWithFrame:CGRectMake(0, 0, 160, 160)];
 	return defaultHUD;
 }
 
@@ -119,13 +123,14 @@ static LGViewHUD* defaultHUD = nil;
 }
 
 -(void) drawRect:(CGRect)rect {
+    CGFloat labelSideMargins = 5;
+    
     UIBezierPath* bPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:kHUDCornerRadius];
     [_hudColor setFill];
     [bPath fill];
     
-    CGFloat imgHeight = MIN(self.frame.size.width, self.frame.size.height) / 2.0;
+    CGFloat imgHeight = activityIndicator?activityIndicator.frame.size.height:image.size.height;
     
-    CGFloat labelSideMargins = 5;
     CGFloat labelsWidth = self.frame.size.width - 2*labelSideMargins;
     CGFloat topLabelHeight = [_topText heightForWidth:labelsWidth usingFont:_labelsFont];
     
@@ -136,13 +141,16 @@ static LGViewHUD* defaultHUD = nil;
     attrs = @{NSFontAttributeName: _labelsFont,
               NSForegroundColorAttributeName: [UIColor whiteColor],
               NSParagraphStyleAttributeName: paragraphStyle};
-    [_topText drawInRect:CGRectMake(labelSideMargins, (labelsMaxHeight - topLabelHeight) /2.0 ,
-                                         labelsWidth, topLabelHeight)
-               withAttributes:attrs];
+    CGFloat topY = (labelsMaxHeight - topLabelHeight) / 2.0;
+    topY = topY<labelSideMargins?labelSideMargins:topY;
+    [_topText drawInRect:CGRectMake(labelSideMargins, topY, labelsWidth, topLabelHeight)
+          withAttributes:attrs];
     
     CGFloat bottomLabelHeight = [_bottomText heightForWidth:labelsWidth usingFont:_labelsFont];
+    CGFloat bottomY = labelsMaxHeight + imgHeight + (labelsMaxHeight - bottomLabelHeight) /2.0;
+    bottomY = (bottomY + bottomLabelHeight > rect.size.height - labelSideMargins) ? rect.size.height - bottomLabelHeight - labelSideMargins:bottomY;
     [_bottomText drawInRect:CGRectMake(labelSideMargins,
-                                       imgHeight + labelsMaxHeight + (labelsMaxHeight - bottomLabelHeight) /2.0 ,
+                                       bottomY,
                                        labelsWidth,
                                        bottomLabelHeight)
                withAttributes:attrs];
@@ -179,7 +187,11 @@ static LGViewHUD* defaultHUD = nil;
 }
 
 -(void) showInView:(UIView *)view withAnimation:(HUDAnimation)animation {
-	//NSLog(@"HUD showing in view %@ | %@", view, NSStringFromCGRect(view.bounds));
+    [self showInView:view withAnimation:animation forDuration:0];
+}
+
+-(void) showInView:(UIView *)view withAnimation:(HUDAnimation)animation forDuration:(NSTimeInterval)showDuration {
+	showDuration = (showDuration==0)?_displayDuration:showDuration;
 	switch (animation) {
 		case HUDAnimationNone:
 			self.alpha=1.0;
@@ -193,7 +205,7 @@ static LGViewHUD* defaultHUD = nil;
 			self.transform=CGAffineTransformMakeScale(1.7, 1.7);
 			[view addSubview:self];
 			[UIView beginAnimations:@"HUDShowZoom" context:nil];
-			[UIView setAnimationDuration:0.3];
+			[UIView setAnimationDuration:self.animationDuration];
 			[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
 			self.transform=CGAffineTransformMakeScale(1, 1);
 			self.alpha=1.0;
@@ -211,7 +223,7 @@ static LGViewHUD* defaultHUD = nil;
 				disappearAnimation = HUDAnimationHideFadeOut;
 				break;
 		}
-		[self hideAfterDelay:displayDuration withAnimation:disappearAnimation ];
+		[self hideAfterDelay:showDuration withAnimation:disappearAnimation ];
 	} else {
 		//invalidate current timer for hide if any.
 		[displayTimer invalidate];
@@ -232,26 +244,26 @@ static LGViewHUD* defaultHUD = nil;
 }
 
 -(void) displayTimeOut:(NSTimer*)timer {
-	[displayTimer release];
-	displayTimer=nil;
 	[self hideWithAnimation:(HUDAnimation)[[timer userInfo] intValue]];
 }
 
 -(void) hideWithAnimation:(HUDAnimation)animation {
+    [displayTimer release];
+    displayTimer=nil;
 	switch (animation) {
 		case HUDAnimationHideZoom:
 			[UIView beginAnimations:@"HUDHideZoom" context:nil];
-			[UIView setAnimationDuration:0.4];
+			[UIView setAnimationDuration:self.animationDuration];
 			[UIView setAnimationDelegate:self];
 			[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
 			self.transform=CGAffineTransformMakeScale(0.1, 0.1);
-			self.alpha=0;
+			self.alpha=0.0;
 			[UIView commitAnimations];
 			break;
 		case HUDAnimationHideFadeOut:
 			[UIView beginAnimations:@"HUDHideFade" context:nil];
 			[UIView setAnimationDelegate:self];
-			[UIView setAnimationDuration:1.0];
+			[UIView setAnimationDuration:self.animationDuration];
 			self.alpha=0.0;
 			[UIView commitAnimations];
 			break;

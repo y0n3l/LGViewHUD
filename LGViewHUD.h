@@ -30,6 +30,8 @@ IB_DESIGNABLE
 @property (readwrite, retain) IBInspectable NSString* bottomText;
 /** HUD display duration. Default is 2 sec. */
 @property (readwrite) NSTimeInterval displayDuration;
+
+@property (readwrite) NSTimeInterval animationDuration;
 /** Diplays a large white activity indicator instead of the image if set to YES. 
  Default is `NO`. */
 @property (readwrite) IBInspectable BOOL activityIndicatorOn;
@@ -37,6 +39,7 @@ IB_DESIGNABLE
 /** Returns the default HUD singleton instance. */
 +(LGViewHUD*) defaultHUD;
 
+/** Shows the HUD in application main window. */
 -(void) show;
 
 -(void) showWithAnimation:(HUDAnimation)animation;
@@ -47,6 +50,8 @@ IB_DESIGNABLE
 
 /** Shows the HUD with the given animation and hides it after a delay equals to the displayDuration property value. */
 -(void) showInView:(UIView *)view withAnimation:(HUDAnimation)animation;
+
+-(void) showInView:(UIView *)view withAnimation:(HUDAnimation)animation forDuration:(NSTimeInterval)showDuration;
 
 /** Hides the HUD right now.
  You only need to invoke this one when the HUD is displayed with an activity indicator 
