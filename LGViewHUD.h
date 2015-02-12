@@ -7,9 +7,8 @@
 
 typedef NS_ENUM (NSInteger, HUDAnimation) {
 	HUDAnimationNone,
-	HUDAnimationShowZoom,
-	HUDAnimationHideZoom,
-	HUDAnimationHideFadeOut
+	HUDAnimationZoom,
+	HUDAnimationFade
 };
 
 /**

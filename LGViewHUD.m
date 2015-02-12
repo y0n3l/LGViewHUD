@@ -199,7 +199,7 @@ static LGViewHUD* defaultHUD = nil;
 			self.center=CGPointMake(view.bounds.size.width/2.0, view.bounds.size.height/2.0);
 			[view addSubview:self];
 			break;
-		case HUDAnimationShowZoom:
+		case HUDAnimationZoom:
 			self.center=CGPointMake(view.bounds.size.width/2.0, view.bounds.size.height/2.0);
 			self.alpha=0;
 			self.transform=CGAffineTransformMakeScale(1.7, 1.7);
@@ -214,13 +214,13 @@ static LGViewHUD* defaultHUD = nil;
 			break;
 	}
 	if (!activityIndicatorOn) {
-		HUDAnimation disappearAnimation = HUDAnimationHideFadeOut;
+		HUDAnimation disappearAnimation = HUDAnimationFade;
 		switch (animation) {
-			case HUDAnimationShowZoom:
-				disappearAnimation = HUDAnimationHideZoom;
+			case HUDAnimationZoom:
+				disappearAnimation = HUDAnimationZoom;
 				break;
 			default:
-				disappearAnimation = HUDAnimationHideFadeOut;
+				disappearAnimation = HUDAnimationFade;
 				break;
 		}
 		[self hideAfterDelay:showDuration withAnimation:disappearAnimation ];
@@ -248,7 +248,7 @@ static LGViewHUD* defaultHUD = nil;
     [displayTimer release];
     displayTimer=nil;
 	switch (animation) {
-		case HUDAnimationHideZoom:
+		case HUDAnimationZoom:
 			[UIView beginAnimations:@"HUDHideZoom" context:nil];
 			[UIView setAnimationDuration:self.animationDuration];
 			[UIView setAnimationDelegate:self];
@@ -257,7 +257,7 @@ static LGViewHUD* defaultHUD = nil;
 			self.alpha=0.0;
 			[UIView commitAnimations];
 			break;
-		case HUDAnimationHideFadeOut:
+		case HUDAnimationFade:
 			[UIView beginAnimations:@"HUDHideFade" context:nil];
 			[UIView setAnimationDelegate:self];
 			[UIView setAnimationDuration:self.animationDuration];
