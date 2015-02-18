@@ -14,7 +14,7 @@ static LGViewHUD* defaultHUD = nil;
     UIColor* _hudColor;
     NSString* _topText;
     NSString* _bottomText;
-    UIImage* image;
+    UIImage* _image;
     NSTimeInterval _displayDuration;
     NSTimer* displayTimer;
     BOOL activityIndicatorOn;
@@ -87,15 +87,15 @@ static LGViewHUD* defaultHUD = nil;
 
 /** This disables the activity indicator on if any. */
 -(void) setImage:(UIImage*) img {
-    [img retain];
-    [image release];
-    image = img;
+    img = [[img imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate ] retain];
+    [_image release];
+    _image = img;
     self.activityIndicatorOn = NO;
     [self setNeedsDisplay];
 }
 
 -(UIImage*) image {
-	return image;
+	return _image;
 }
 
 -(BOOL) activityIndicatorOn {
@@ -109,12 +109,10 @@ static LGViewHUD* defaultHUD = nil;
 			activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 			[activityIndicator startAnimating];
 			activityIndicator.center=CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0);
-			//imageView.hidden=YES;
 			[self addSubview:activityIndicator];
 		} else {
 			//when applying an image, this will auto hide the HUD.
 			[activityIndicator removeFromSuperview];
-			//imageView.hidden=NO;
 			[activityIndicator release];
 			activityIndicator=nil;
 		}
@@ -158,11 +156,11 @@ static LGViewHUD* defaultHUD = nil;
     [paragraphStyle release];
     
     if (!activityIndicatorOn) {
-        CGRect imageFrame = CGRectMake((self.frame.size.width - image.size.width) /2.0,
-                                       (self.frame.size.height - image.size.height) / 2.0,
-                                       image.size.width,
-                                       image.size.height);
-        [image drawInRect:imageFrame];
+        CGRect imageFrame = CGRectMake((self.frame.size.width - _image.size.width) /2.0,
+                                       (self.frame.size.height - _image.size.height) / 2.0,
+                                       _image.size.width,
+                                       _image.size.height);
+        [_image drawInRect:imageFrame];
     }
     [super drawRect:rect];
 }
