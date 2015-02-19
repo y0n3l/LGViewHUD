@@ -45,6 +45,7 @@ static LGViewHUD* defaultHUD = nil;
         _hudColor = [[UIColor colorWithWhite:0 alpha:kHUDDefaultAlphaValue] retain];
         self.backgroundColor = [UIColor clearColor];
         self.tintColor = [UIColor whiteColor];
+        [self addParallaxEffect];
     }
     return self;
 }
@@ -56,6 +57,23 @@ static LGViewHUD* defaultHUD = nil;
     _hudColor = nil;
 	[super dealloc];
 }
+
+-(void) addParallaxEffect {
+    double parallaxAmount = 10.0;
+    UIInterpolatingMotionEffect *interpolationHorizontal = [[UIInterpolatingMotionEffect alloc]initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+    interpolationHorizontal.minimumRelativeValue = @(-parallaxAmount);
+    interpolationHorizontal.maximumRelativeValue = @(parallaxAmount);
+    
+    UIInterpolatingMotionEffect *interpolationVertical = [[UIInterpolatingMotionEffect alloc]initWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+    interpolationVertical.minimumRelativeValue = @(-parallaxAmount);
+    interpolationVertical.maximumRelativeValue = @(parallaxAmount);
+    
+    [self addMotionEffect:interpolationHorizontal];
+    [self addMotionEffect:interpolationVertical];
+    [interpolationHorizontal release];
+    [interpolationVertical release];
+}
+
 
 +(LGViewHUD*) defaultHUD {
 	if (defaultHUD==nil)
@@ -197,6 +215,14 @@ static LGViewHUD* defaultHUD = nil;
 			self.center=CGPointMake(view.bounds.size.width/2.0, view.bounds.size.height/2.0);
 			[view addSubview:self];
 			break;
+        case HUDAnimationFade:
+            self.alpha=0.0;
+            [UIView beginAnimations:@"HUDShowFade" context:nil];
+            [UIView setAnimationDelegate:self];
+            [UIView setAnimationDuration:self.animationDuration];
+            self.alpha=1.0;
+            [UIView commitAnimations];
+            break;
 		case HUDAnimationZoom:
 			self.center=CGPointMake(view.bounds.size.width/2.0, view.bounds.size.height/2.0);
 			self.alpha=0;
