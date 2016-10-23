@@ -3,6 +3,10 @@ LGViewHUD
 A HUD that mimics the native one used in iOS (when you press volume up or down on the iPhone for instance) and also provides some more features (some more animations + activity indicator support included.)
 iOS7 and above only.
 
+License
+=======
+LGViewHUD is licensed under the WTFPL license. ( http://www.wtfpl.net/ )  
+
 Code example:
 =============
     #import "LGViewHUD.h"
